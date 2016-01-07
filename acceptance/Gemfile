@@ -17,6 +17,11 @@ gem "beaker-hostgenerator", *location_for(ENV['BEAKER_HOSTGENERATOR_VERSION'] ||
 gem 'rake'
 gem 'scooter', '~> 3.1.1'
 
+gem 'rschema', :source => 'https://rubygems.org'
+git 'https://github.com/puppetlabs/ruby-pcp-client' do
+  gem 'pcp-client'
+end
+
 group(:test) do
   gem 'rspec', '~> 2.14.0', :require => false
   gem 'mocha', '~> 0.10.5', :require => false
