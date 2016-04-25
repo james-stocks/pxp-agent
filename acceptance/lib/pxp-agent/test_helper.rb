@@ -267,6 +267,35 @@ def rpc_non_blocking_request(broker, targets,
   rpc_request(broker, targets, pxp_module, action, params, false)
 end
 
+def rpc_fire_and_forget(broker, targets,
+                        pxp_module = 'pxp-module-puppet', action = 'run',
+                        params)
+  mutex = Mutex.new
+  have_response = ConditionVariable.new
+  responses = Hash.new
+
+  client = connect_pcp_client(broker)
+
+  message = PCP::Message.new({
+    :message_type => 'http://puppetlabs.com/rpc_non_blocking_request',
+    :targets => targets
+  })
+
+  message_data = {
+    :transaction_id => SecureRandom.uuid,
+    :module         => pxp_module,
+    :action         => action,
+    :params         => params,
+    :notify_outcome => false
+  }
+  message.data = message_data.to_json
+
+  message_expiry = 3600 # Seconds for the PCP message to be considered failed
+  message.expires(message_expiry)
+  client.send(message)
+  client.close
+end
+
 def rpc_request(broker, targets,
                 pxp_module = 'pxp-module-puppet', action = 'run',
                 params, blocking)
