@@ -135,6 +135,9 @@ end
 # @raise Exception if pcp-client cannot connect to make the inventory request, does not receive a response, or the response is missing
 #        the required [:data]["uris"] property
 def pcp_broker_inventory(broker, query)
+
+  logger.debug("About to send #{broker} a PCP inventory_request @ #{Time.now.to_s}")
+
   mutex = Mutex.new
   have_response = ConditionVariable.new
   response = nil
@@ -177,7 +180,7 @@ def pcp_broker_inventory(broker, query)
       end
     end
   rescue Timeout::Error
-    raise "Didn't receive a response for PCP inventory request"
+    raise "Didn't receive a response for PCP inventory request @ #{Time.now.to_s}"
   ensure
     client.close
   end # wait for message
@@ -188,6 +191,7 @@ def pcp_broker_inventory(broker, query)
   if(!response[:data].has_key?("uris"))
     raise 'Response to PCP inventory request is missing an array of uri\'s'
   end
+  logger.debug("Results of PCP inventory_request: #{response[:data]["uris"].to_s} @ #{Time.now.to_s}")
   response[:data]["uris"]
 end
 
