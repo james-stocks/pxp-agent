@@ -11,7 +11,7 @@ test_name 'C93062 - Run puppet and expect \'changed\' result' do
     site_manifest = "#{environmentpath}/#{environment_name}/manifests/site.pp"
     create_remote_file(master, site_manifest, <<-SITEPP)
 node default {
-  notify {'Notify resources cause a Puppet run to have a \\'changed\\' outcome ☃':}
+  notify {'Notify resources cause a Puppet run to have a \\'changed\\' outcome':}
 }
 SITEPP
     on(master, "chmod 644 #{site_manifest}")
